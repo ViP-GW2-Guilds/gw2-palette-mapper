@@ -18,8 +18,8 @@ importers:
         specifier: ^8.53.1
         version: 8.53.1(eslint@9.39.2)(typescript@5.9.3)
       '@vip-gw2-guilds/gw2-build-decoder':
-        specifier: file:../gw2-build-decoder
-        version: file:../gw2-build-decoder
+        specifier: ^0.2.0
+        version: 0.2.0
       eslint:
         specifier: ^9.39.2
         version: 9.39.2
@@ -450,8 +450,8 @@ packages:
     resolution: {integrity: sha512-oy+wV7xDKFPRyNggmXuZQSBzvoLnpmJs+GhzRhPjrxl2b/jIlyjVokzm47CZCDUdXKr2zd7ZLodPfOBpOPyPlg==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
 
-  '@vip-gw2-guilds/gw2-build-decoder@file:../gw2-build-decoder':
-    resolution: {directory: ../gw2-build-decoder, type: directory}
+  '@vip-gw2-guilds/gw2-build-decoder@0.2.0':
+    resolution: {integrity: sha512-CLuXLkEVrONVJRzvfe53Bbyk9Il37JsJcuArdnyKvCeUHcA/AWC7MFiW/z2LU1Wwtj2z9454HgYGq/Qwy63m4g==, tarball: https://npm.pkg.github.com/download/@vip-gw2-guilds/gw2-build-decoder/0.2.0/b84ce110073f839ea7f450d46f3900735c321f5c}
     engines: {node: '>=22.0.0'}
 
   '@vitest/expect@4.0.17':
@@ -1287,7 +1287,7 @@ snapshots:
       '@typescript-eslint/types': 8.53.1
       eslint-visitor-keys: 4.2.1
 
-  '@vip-gw2-guilds/gw2-build-decoder@file:../gw2-build-decoder': {}
+  '@vip-gw2-guilds/gw2-build-decoder@0.2.0': {}
 
   '@vitest/expect@4.0.17':
     dependencies:
