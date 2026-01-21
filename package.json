@@ -1,6 +1,6 @@
 {
   "name": "@vip-gw2-guilds/gw2-palette-mapper",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Palette mapping implementation for GW2 official build codes using the GW2 API",
   "type": "module",
   "main": "./dist/index.js",
@@ -45,7 +45,7 @@
     "@types/node": "^25.0.9",
     "@typescript-eslint/eslint-plugin": "^8.53.1",
     "@typescript-eslint/parser": "^8.53.1",
-    "@vip-gw2-guilds/gw2-build-decoder": "file:../gw2-build-decoder",
+    "@vip-gw2-guilds/gw2-build-decoder": "^0.2.0",
     "eslint": "^9.39.2",
     "prettier": "^3.8.0",
     "typescript": "^5.9.3",
