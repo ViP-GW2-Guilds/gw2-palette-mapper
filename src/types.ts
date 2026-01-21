@@ -22,8 +22,8 @@ export interface GW2ApiProfession {
   id: string;
   /** Profession display name */
   name: string;
-  /** Array of skill IDs indexed by palette ID (null for unused indices) */
-  skills_by_palette: Array<number | null>;
+  /** Array of [paletteId, skillId] pairs */
+  skills_by_palette: Array<[number, number | null]>;
   /** Other fields we don't use */
   [key: string]: unknown;
 }

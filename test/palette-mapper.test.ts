@@ -19,10 +19,10 @@ describe('GW2PaletteMapper', () => {
     id: 'Guardian',
     name: 'Guardian',
     skills_by_palette: [
-      null, // 0
-      12343, // 1
-      12417, // 2
-      12371, // 3
+      [1, 12343], // paletteId 1 -> skillId 12343
+      [2, 12417], // paletteId 2 -> skillId 12417
+      [3, 12371], // paletteId 3 -> skillId 12371
+      [999, null], // paletteId 999 -> no skill
     ],
   };
 
@@ -129,7 +129,10 @@ describe('GW2PaletteMapper', () => {
     const mockWarriorResponse = {
       id: 'Warrior',
       name: 'Warrior',
-      skills_by_palette: [null, 14401, 14405],
+      skills_by_palette: [
+        [1, 14401], // paletteId 1 -> skillId 14401
+        [2, 14405], // paletteId 2 -> skillId 14405
+      ],
     };
 
     mockFetch
