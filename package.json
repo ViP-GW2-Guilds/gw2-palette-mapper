@@ -1,6 +1,6 @@
 {
   "name": "@vip-gw2-guilds/gw2-palette-mapper",
-  "version": "0.2.6",
+  "version": "0.2.7",
   "description": "Palette mapping implementation for GW2 official build codes using the GW2 API",
   "type": "module",
   "main": "./dist/index.js",
@@ -44,7 +44,7 @@
   "license": "MIT",
   "packageManager": "pnpm@10.9.0",
   "peerDependencies": {
-    "@vip-gw2-guilds/gw2-build-decoder": "^0.2.0"
+    "@vip-gw2-guilds/gw2-build-decoder": "^0.2.0 || ^0.3.0"
   },
   "devDependencies": {
     "@types/node": "^25.0.9",
