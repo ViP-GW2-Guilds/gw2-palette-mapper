@@ -1,6 +1,6 @@
 {
   "name": "@vip-gw2-guilds/gw2-palette-mapper",
-  "version": "0.2.5",
+  "version": "0.2.6",
   "description": "Palette mapping implementation for GW2 official build codes using the GW2 API",
   "type": "module",
   "main": "./dist/index.js",

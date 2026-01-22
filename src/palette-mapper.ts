@@ -133,14 +133,13 @@ export class GW2PaletteMapper implements PaletteMapper {
     const skillToPalette = new Map<number, number>();
 
     // Build mappings from API data
-    apiData.skills_by_palette.forEach(
-      (skillId: number | null, paletteIndex: number) => {
-        if (skillId !== null && skillId !== 0) {
-          paletteToSkill.set(paletteIndex, skillId);
-          skillToPalette.set(skillId, paletteIndex);
-        }
-      },
-    );
+    // skills_by_palette is an array of [paletteId, skillId] pairs
+    apiData.skills_by_palette.forEach(([paletteId, skillId]) => {
+      if (skillId !== null && skillId !== 0) {
+        paletteToSkill.set(paletteId, skillId);
+        skillToPalette.set(skillId, paletteId);
+      }
+    });
 
     return { paletteToSkill, skillToPalette };
   }
