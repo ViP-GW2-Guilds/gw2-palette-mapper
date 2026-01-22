@@ -106,6 +106,71 @@ export class GW2PaletteMapper implements PaletteMapper {
   }
 
   /**
+   * Get skill information from GW2 API (for validation)
+   * @param skillId - The skill ID to look up
+   * @returns Promise resolving to skill info, or null if not found
+   */
+  async getSkillInfo(
+    skillId: number,
+  ): Promise<{ id: number; name: string; professions: string[]; type: string; slot: string } | null> {
+    try {
+      const data = await this.apiClient.fetchSkill(skillId);
+      return {
+        id: data.id,
+        name: data.name,
+        professions: data.professions,
+        type: data.type,
+        slot: data.slot,
+      };
+    } catch (error) {
+      // Skill doesn't exist or API error
+      return null;
+    }
+  }
+
+  /**
+   * Get specialization information from GW2 API (for validation)
+   * @param specId - The specialization ID to look up
+   * @returns Promise resolving to specialization info, or null if not found
+   */
+  async getSpecializationInfo(
+    specId: number,
+  ): Promise<{ id: number; name: string; profession: string; elite: boolean } | null> {
+    try {
+      const data = await this.apiClient.fetchSpecialization(specId);
+      return {
+        id: data.id,
+        name: data.name,
+        profession: data.profession,
+        elite: data.elite,
+      };
+    } catch (error) {
+      // Specialization doesn't exist or API error
+      return null;
+    }
+  }
+
+  /**
+   * Get pet information from GW2 API (for validation)
+   * @param petId - The pet ID to look up
+   * @returns Promise resolving to pet info, or null if not found
+   */
+  async getPetInfo(
+    petId: number,
+  ): Promise<{ id: number; name: string } | null> {
+    try {
+      const data = await this.apiClient.fetchPet(petId);
+      return {
+        id: data.id,
+        name: data.name,
+      };
+    } catch (error) {
+      // Pet doesn't exist or API error
+      return null;
+    }
+  }
+
+  /**
    * Get palette data for a profession (from cache or API)
    */
   private async getPaletteData(profession: Profession): Promise<PaletteData> {
