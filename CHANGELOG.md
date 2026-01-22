@@ -5,7 +5,42 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.3.0] - 2026-01-22
+## [1.0.0] - 2026-01-22
+
+### Production Release
+
+First production-ready release with all critical bugs fixed and validation support.
+
+**Highlights:**
+- ✅ All critical bugs fixed (API schema header, palette parsing)
+- ✅ Build validation support via metadata methods
+- ✅ Compatible with gw2-build-decoder v1.0.0
+- ✅ 11 tests passing, production-ready
+
+### Added
+- `getSkillInfo(skillId)` method for fetching skill metadata
+- `getSpecializationInfo(specId)` method for fetching specialization metadata
+- `getPetInfo(petId)` method for fetching pet metadata
+- Implements MetadataProvider interface from gw2-build-decoder v1.0.0
+- GW2ApiSkill, GW2ApiSpecialization, GW2ApiPet type definitions
+- `fetchSkill()`, `fetchSpecialization()`, `fetchPet()` to GW2ApiClient
+- Complete CHANGELOG and enhanced README
+
+### Changed
+- **BREAKING:** Updated peerDependencies to require gw2-build-decoder ^1.0.0
+- Metadata methods return null for not-found cases (graceful degradation)
+
+### Fixed
+- **Critical:** Added X-Schema-Version: 2019-12-19T00:00:00.000Z header to API requests
+- **Critical:** Fixed skills_by_palette parsing as array of [paletteId, skillId] tuples
+- Corrected type definition to match actual API structure
+
+### Notes
+- All critical bugs from v0.2.4-0.2.7 are now fixed
+- Fully compatible with decoder v1.0.0 aquatic skills support
+- Enables BuildValidator functionality
+
+## [0.3.0] - 2026-01-22 (Pre-release)
 
 ### Added
 - `getSkillInfo(skillId)` method for fetching skill metadata from GW2 API
