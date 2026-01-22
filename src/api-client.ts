@@ -3,7 +3,13 @@
  */
 
 import type { Profession } from '@vip-gw2-guilds/gw2-build-decoder';
-import type { GW2ApiProfession, PaletteMapperOptions } from './types.js';
+import type {
+  GW2ApiProfession,
+  GW2ApiSkill,
+  GW2ApiSpecialization,
+  GW2ApiPet,
+  PaletteMapperOptions,
+} from './types.js';
 import { PROFESSION_NAMES } from './constants.js';
 
 /**
@@ -60,6 +66,117 @@ export class GW2ApiClient {
       }
 
       return data;
+    } catch (error) {
+      if (error instanceof Error && error.name === 'AbortError') {
+        throw new Error(`GW2 API request timeout after ${this.timeout}ms`);
+      }
+      throw error;
+    } finally {
+      clearTimeout(timeoutId);
+    }
+  }
+
+  /**
+   * Fetch skill data from GW2 API
+   * @param skillId - The skill ID to fetch
+   * @returns Promise resolving to skill data
+   * @throws Error if API request fails or times out
+   */
+  async fetchSkill(skillId: number): Promise<GW2ApiSkill> {
+    const url = `${this.baseUrl}/v2/skills/${skillId}`;
+
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), this.timeout);
+
+    try {
+      const response = await fetch(url, {
+        signal: controller.signal,
+        headers: {
+          Accept: 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(
+          `GW2 API error: ${response.status} ${response.statusText}`,
+        );
+      }
+
+      return (await response.json()) as GW2ApiSkill;
+    } catch (error) {
+      if (error instanceof Error && error.name === 'AbortError') {
+        throw new Error(`GW2 API request timeout after ${this.timeout}ms`);
+      }
+      throw error;
+    } finally {
+      clearTimeout(timeoutId);
+    }
+  }
+
+  /**
+   * Fetch specialization data from GW2 API
+   * @param specId - The specialization ID to fetch
+   * @returns Promise resolving to specialization data
+   * @throws Error if API request fails or times out
+   */
+  async fetchSpecialization(specId: number): Promise<GW2ApiSpecialization> {
+    const url = `${this.baseUrl}/v2/specializations/${specId}`;
+
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), this.timeout);
+
+    try {
+      const response = await fetch(url, {
+        signal: controller.signal,
+        headers: {
+          Accept: 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(
+          `GW2 API error: ${response.status} ${response.statusText}`,
+        );
+      }
+
+      return (await response.json()) as GW2ApiSpecialization;
+    } catch (error) {
+      if (error instanceof Error && error.name === 'AbortError') {
+        throw new Error(`GW2 API request timeout after ${this.timeout}ms`);
+      }
+      throw error;
+    } finally {
+      clearTimeout(timeoutId);
+    }
+  }
+
+  /**
+   * Fetch pet data from GW2 API
+   * @param petId - The pet ID to fetch
+   * @returns Promise resolving to pet data
+   * @throws Error if API request fails or times out
+   */
+  async fetchPet(petId: number): Promise<GW2ApiPet> {
+    const url = `${this.baseUrl}/v2/pets/${petId}`;
+
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), this.timeout);
+
+    try {
+      const response = await fetch(url, {
+        signal: controller.signal,
+        headers: {
+          Accept: 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(
+          `GW2 API error: ${response.status} ${response.statusText}`,
+        );
+      }
+
+      return (await response.json()) as GW2ApiPet;
     } catch (error) {
       if (error instanceof Error && error.name === 'AbortError') {
         throw new Error(`GW2 API request timeout after ${this.timeout}ms`);

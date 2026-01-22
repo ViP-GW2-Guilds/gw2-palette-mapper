@@ -41,6 +41,52 @@ export interface PaletteMapperOptions {
 }
 
 /**
+ * GW2 API skill response structure
+ */
+export interface GW2ApiSkill {
+  /** Skill ID */
+  id: number;
+  /** Skill name */
+  name: string;
+  /** Professions that can use this skill */
+  professions: string[];
+  /** Skill type */
+  type: string;
+  /** Skill slot */
+  slot: string;
+  /** Other fields */
+  [key: string]: unknown;
+}
+
+/**
+ * GW2 API specialization response structure
+ */
+export interface GW2ApiSpecialization {
+  /** Specialization ID */
+  id: number;
+  /** Specialization name */
+  name: string;
+  /** Profession that owns this specialization */
+  profession: string;
+  /** Whether this is an elite specialization */
+  elite: boolean;
+  /** Other fields */
+  [key: string]: unknown;
+}
+
+/**
+ * GW2 API pet response structure
+ */
+export interface GW2ApiPet {
+  /** Pet ID */
+  id: number;
+  /** Pet name */
+  name: string;
+  /** Other fields */
+  [key: string]: unknown;
+}
+
+/**
  * Re-export Profession for convenience
  */
 export type Profession = ProfessionType;
