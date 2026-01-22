@@ -27,7 +27,7 @@ npm install @vip-gw2-guilds/gw2-build-decoder
 ## Requirements
 
 - Node.js >= 22.0.0
-- `@vip-gw2-guilds/gw2-build-decoder` ^0.2.0
+- `@vip-gw2-guilds/gw2-build-decoder` ^1.0.0 (recommended) or ^0.2.0+
 
 ## Quick Start
 
@@ -62,6 +62,7 @@ const mapper = new GW2PaletteMapper({
 - ✅ Support for all 9 GW2 professions
 - ✅ In-memory caching (30-minute TTL)
 - ✅ Automatic GW2 API fetching (lazy loaded per profession)
+- ✅ **Build validation support** (v0.3.0+) - skill/spec/pet metadata
 - ✅ TypeScript strict mode
 - ✅ Zero runtime dependencies (uses Node.js built-in fetch)
 - ⚠️ Limited Revenant support (see [Limitations](#limitations))
@@ -134,6 +135,79 @@ mapper.clearCache();
 **Parameters:**
 - `profession` (Profession, optional): Profession to clear (if undefined, clears all)
 
+##### `getSkillInfo(skillId): Promise<SkillInfo | null>` (v0.3.0+)
+
+Fetch skill metadata from GW2 API for validation.
+
+```typescript
+const skillInfo = await mapper.getSkillInfo(10527);
+console.log(skillInfo.name); // "Well of Blood"
+console.log(skillInfo.professions); // ["Necromancer"]
+console.log(skillInfo.type); // "Utility"
+```
+
+**Parameters:**
+- `skillId` (number): Skill ID to look up
+
+**Returns:** Promise resolving to skill info, or null if not found
+
+##### `getSpecializationInfo(specId): Promise<SpecializationInfo | null>` (v0.3.0+)
+
+Fetch specialization metadata from GW2 API for validation.
+
+```typescript
+const specInfo = await mapper.getSpecializationInfo(53);
+console.log(specInfo.name); // "Spite"
+console.log(specInfo.profession); // "Necromancer"
+console.log(specInfo.elite); // false
+```
+
+**Parameters:**
+- `specId` (number): Specialization ID to look up
+
+**Returns:** Promise resolving to specialization info, or null if not found
+
+##### `getPetInfo(petId): Promise<PetInfo | null>` (v0.3.0+)
+
+Fetch pet metadata from GW2 API for validation.
+
+```typescript
+const petInfo = await mapper.getPetInfo(59);
+console.log(petInfo.name); // "Moa"
+```
+
+**Parameters:**
+- `petId` (number): Pet ID to look up
+
+**Returns:** Promise resolving to pet info, or null if not found
+
+## Build Validation (v0.3.0+)
+
+The palette mapper implements the `MetadataProvider` interface, making it compatible with `BuildValidator` from gw2-build-decoder v1.0.0+:
+
+```typescript
+import { decode, BuildValidator } from '@vip-gw2-guilds/gw2-build-decoder';
+import { GW2PaletteMapper } from '@vip-gw2-guilds/gw2-palette-mapper';
+
+const mapper = new GW2PaletteMapper();
+const validator = new BuildValidator(mapper); // Mapper provides metadata
+
+const build = await decode(chatLink, mapper);
+const result = await validator.validate(build);
+
+if (!result.valid) {
+  result.errors.forEach(error => {
+    console.error(`[${error.type}] ${error.message}`);
+  });
+}
+```
+
+The validator checks:
+- ✅ All skill IDs exist in GW2 API
+- ✅ Skills can be used by the profession
+- ✅ Specialization IDs exist and belong to the profession
+- ✅ Pet IDs are valid (for Rangers)
+
 ## How It Works
 
 1. **First use:** When you call `paletteToSkill` or `skillToPalette` for a profession, the mapper fetches data from the GW2 API
@@ -145,22 +219,24 @@ mapper.clearCache();
 
 Uses: `https://api.guildwars2.com/v2/professions/{ProfessionName}`
 
+**Important:** Requires header `X-Schema-Version: 2019-12-19T00:00:00.000Z` to get `skills_by_palette` field.
+
 Example response structure:
 ```json
 {
   "id": "Guardian",
   "name": "Guardian",
   "skills_by_palette": [
-    null,
-    12343,
-    12417,
-    12371,
+    [1, 12343],
+    [2, 12417],
+    [3, 12371],
+    [4, 12337],
     ...
   ]
 }
 ```
 
-The `skills_by_palette` array is indexed by palette ID, with `null` for unused indices.
+The `skills_by_palette` field is an array of `[paletteId, skillId]` tuples.
 
 ## Limitations
 
