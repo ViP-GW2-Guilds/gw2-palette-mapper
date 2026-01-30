@@ -46,7 +46,7 @@ export class GW2ApiClient {
         signal: controller.signal,
         headers: {
           Accept: 'application/json',
-          'X-Schema-Version': '2019-12-19T00:00:00.000Z',
+          'X-Schema-Version': '2025-08-29T01:00:00.000Z',
         },
       });
 

@@ -219,7 +219,7 @@ The validator checks:
 
 Uses: `https://api.guildwars2.com/v2/professions/{ProfessionName}`
 
-**Important:** Requires header `X-Schema-Version: 2019-12-19T00:00:00.000Z` to get `skills_by_palette` field.
+**Important:** Requires header `X-Schema-Version: 2025-08-29T01:00:00.000Z` to get `skills_by_palette` field.
 
 Example response structure:
 ```json
