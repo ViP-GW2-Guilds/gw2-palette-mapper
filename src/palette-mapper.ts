@@ -17,6 +17,10 @@ import {
   DEFAULT_CACHE_TTL,
   DEFAULT_TIMEOUT,
 } from './constants.js';
+import {
+  REVENANT_PALETTE_TO_SKILL,
+  REVENANT_SKILL_TO_PALETTE,
+} from './revenant-legends.js';
 
 /**
  * Palette mapper implementation using GW2 official API
@@ -47,21 +51,23 @@ export class GW2PaletteMapper implements PaletteMapper {
    * Convert a palette index to a skill ID
    * @param profession - The character profession
    * @param paletteIndex - The palette index from the build code
+   * @param legend - Optional legend ID for Revenant profession (required for legend-specific skills)
    * @returns Promise resolving to the corresponding skill ID
    * @throws Error if palette index is not mapped
    */
   async paletteToSkill(
     profession: Profession,
     paletteIndex: number,
+    legend?: number,
   ): Promise<number> {
     if (paletteIndex === 0) return 0;
 
-    const data = await this.getPaletteData(profession);
+    const data = await this.getPaletteData(profession, legend);
 
     const skillId = data.paletteToSkill.get(paletteIndex);
     if (skillId === undefined) {
       throw new Error(
-        `No skill mapping for palette ${paletteIndex} (Profession ${profession})`,
+        `No skill mapping for palette ${paletteIndex} (Profession ${profession}${legend ? `, Legend ${legend}` : ''})`,
       );
     }
 
@@ -72,21 +78,23 @@ export class GW2PaletteMapper implements PaletteMapper {
    * Convert a skill ID to a palette index
    * @param profession - The character profession
    * @param skillId - The skill ID to encode
+   * @param legend - Optional legend ID for Revenant profession (required for legend-specific skills)
    * @returns Promise resolving to the corresponding palette index
    * @throws Error if skill ID is not mapped
    */
   async skillToPalette(
     profession: Profession,
     skillId: number,
+    legend?: number,
   ): Promise<number> {
     if (skillId === 0) return 0;
 
-    const data = await this.getPaletteData(profession);
+    const data = await this.getPaletteData(profession, legend);
 
     const paletteIndex = data.skillToPalette.get(skillId);
     if (paletteIndex === undefined) {
       throw new Error(
-        `No palette mapping for skill ${skillId} (Profession ${profession})`,
+        `No palette mapping for skill ${skillId} (Profession ${profession}${legend ? `, Legend ${legend}` : ''})`,
       );
     }
 
@@ -172,28 +180,42 @@ export class GW2PaletteMapper implements PaletteMapper {
 
   /**
    * Get palette data for a profession (from cache or API)
+   * @param profession - The character profession
+   * @param legend - Optional legend ID for Revenant (enables legend-specific mapping)
    */
-  private async getPaletteData(profession: Profession): Promise<PaletteData> {
-    // Check cache
-    const cached = this.cache.get(profession);
-    if (cached && Date.now() - cached.timestamp < this.options.cacheTtl) {
-      return cached.data;
+  private async getPaletteData(
+    profession: Profession,
+    legend?: number,
+  ): Promise<PaletteData> {
+    // Check cache (legend-specific data is not cached, always fetched fresh for Revenant)
+    if (!legend) {
+      const cached = this.cache.get(profession);
+      if (cached && Date.now() - cached.timestamp < this.options.cacheTtl) {
+        return cached.data;
+      }
     }
 
     // Fetch from API
     const apiData = await this.apiClient.fetchProfession(profession);
-    const data = this.buildPaletteData(apiData);
+    const data = this.buildPaletteData(apiData, legend);
 
-    // Cache result
-    this.cache.set(profession, { data, timestamp: Date.now() });
+    // Cache result (only cache base profession data, not legend-specific)
+    if (!legend) {
+      this.cache.set(profession, { data, timestamp: Date.now() });
+    }
 
     return data;
   }
 
   /**
    * Build bidirectional palette mapping from API response
+   * @param apiData - The GW2 API profession data
+   * @param legend - Optional legend ID for Revenant (enables legend-specific mapping)
    */
-  private buildPaletteData(apiData: GW2ApiProfession): PaletteData {
+  private buildPaletteData(
+    apiData: GW2ApiProfession,
+    legend?: number,
+  ): PaletteData {
     const paletteToSkill = new Map<number, number>();
     const skillToPalette = new Map<number, number>();
 
@@ -205,6 +227,25 @@ export class GW2PaletteMapper implements PaletteMapper {
         skillToPalette.set(skillId, paletteId);
       }
     });
+
+    // Apply Revenant legend-specific overrides
+    if (apiData.code === 9 && legend) {
+      // For Revenant with a specific legend, apply hardcoded legend-skill mappings
+      // These mappings are not provided by the GW2 API and must be manually maintained
+
+      // Skill-to-palette: Merge in all legend-specific skills
+      REVENANT_SKILL_TO_PALETTE.forEach((paletteIdx, skillId) => {
+        skillToPalette.set(skillId, paletteIdx);
+      });
+
+      // Palette-to-skill: For legend-specific palette indices, use the legend-specific skill
+      REVENANT_PALETTE_TO_SKILL.forEach((legendMap, paletteIdx) => {
+        const skillId = legendMap.get(legend);
+        if (skillId !== undefined) {
+          paletteToSkill.set(paletteIdx, skillId);
+        }
+      });
+    }
 
     return { paletteToSkill, skillToPalette };
   }

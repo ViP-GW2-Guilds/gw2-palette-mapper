@@ -238,22 +238,45 @@ Example response structure:
 
 The `skills_by_palette` field is an array of `[paletteId, skillId]` tuples.
 
-## Limitations
+## Revenant Legend Support
 
-### Revenant Legend-Based Mapping
+**Full legend support is implemented!** This package now correctly handles Revenant legend-specific skills.
 
-**Current Behavior:** Uses base API mappings for Revenant. The GW2 API provides one skill per palette index.
+### How It Works
 
-**Issue:** In the actual game, Revenant palette indices map to different skills depending on the active legend. For example, palette index 4572 maps to different heal skills for Shiro vs. Ventari.
+The GW2 API does not provide palette mappings for classic Revenant legends (1-7). All legends share the same palette indices for the same skill slot:
 
-**Impact:** Revenant builds may not decode/encode with 100% accuracy for legend-specific skills.
+- **Palette 4572**: ALL legend heal skills
+- **Palette 4564**: ALL legend utility1 skills
+- **Palette 4614**: ALL legend utility2 skills
+- **Palette 4651**: ALL legend utility3 skills
+- **Palette 4554**: ALL legend elite skills
 
-**Workaround:** The base API mappings work for most common cases. Full legend support would require:
-1. Extending the `PaletteMapper` interface to accept legend context
-2. Implementing legend-specific override mappings
-3. Updating the decoder to pass legend information to the mapper
+The legend ID is required to determine which specific skill a palette index represents. The `gw2-build-decoder` package automatically passes legend information when encoding/decoding Revenant builds.
 
-This is planned for a future version (v0.2.0+) if needed.
+### Legend Mappings
+
+Hardcoded mappings are maintained for Revenant legends 1-7:
+- **Legend 1**: Glint (Legendary Dragon Stance)
+- **Legend 2**: Shiro (Legendary Assassin Stance)
+- **Legend 3**: Jalis (Legendary Dwarf Stance)
+- **Legend 4**: Mallyx (Legendary Demon Stance)
+- **Legend 5**: Kalla (Legendary Renegade Stance)
+- **Legend 6**: Ventari (Legendary Centaur Stance)
+- **Legend 7**: Vindicator (Legendary Alliance Stance)
+
+Legend 8 skills are provided directly by the GW2 API and work without additional mapping.
+
+### Implementation
+
+The legend parameter is optional in the `PaletteMapper` interface:
+
+```typescript
+paletteToSkill(profession: Profession, paletteIndex: number, legend?: number): Promise<number>;
+skillToPalette(profession: Profession, skillId: number, legend?: number): Promise<number>;
+```
+
+For non-Revenant professions, the legend parameter is ignored. For Revenant, when a legend is provided, legend-specific skill mappings are automatically applied.
 
 ## Error Handling
 
